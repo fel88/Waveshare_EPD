@@ -1,6 +1,6 @@
 # Waveshare_EPD
 
-Cyrillic support for Waveshare e-Paper
+Cyrillic support (Windows-1251) for Waveshare e-Paper
 
 Fonts generated with: https://github.com/fel88/GFXFontTool
 
