@@ -97,5 +97,7 @@ void EPD_5IN83_Init(void);
 void EPD_5IN83_Clear(void);
 void EPD_5IN83_Display(void);
 void EPD_5IN83_Sleep(void);
-
+void EPD_5IN83_SendCommand(UBYTE Reg);
+void EPD_5IN83_SendData(UBYTE Data);
+void EPD_5IN83_TurnOnDisplay(void);
 #endif
