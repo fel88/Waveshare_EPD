@@ -17,7 +17,7 @@
 #include "Debug.h"
 #include "GUI_Paint.h"
 BMP_HEADER BMP_Header;
-
+SdFat sd;
 /******************************************************************************
 function:	Read 2 bytes of data and convert to big endian
 parameter:
@@ -25,7 +25,7 @@ Info:
     These read data from the SD card file and convert them to big endian 
     (the data is stored in little endian format!)
 ******************************************************************************/
-UWORD SDCard_Read16(File f)
+UWORD SDCard_Read16(File& f)
 {
     UWORD d;
     UBYTE b;
@@ -43,7 +43,7 @@ Info:
     These read data from the SD card file and convert them to big endian 
     (the data is stored in little endian format!)
 ******************************************************************************/
-UDOUBLE SDCard_Read32(File f)
+UDOUBLE SDCard_Read32(File& f)
 {
     UDOUBLE d;
     UWORD b;
@@ -62,7 +62,7 @@ Info:
     These read data from the SD card file and convert them to big endian 
     (the data is stored in little endian format!)
 ******************************************************************************/
-boolean SDCard_ReadBmpHeader(File f)
+boolean SDCard_ReadBmpHeader(File& f)
 {
     UWORD File_Type;
     File_Type = SDCard_Read16(f) ;//0000h 2byte: file type
@@ -113,15 +113,19 @@ Info:
 ******************************************************************************/
 void SDCard_Init(void)
 {
-    SD_CS_1;
+    //SD_CS_1;
 
-    Sd2Card card;
-    card.init(SPI_FULL_SPEED, SD_CS);
-    if (!SD.begin(SD_CS))  {
-        DEBUG("SD init failed!\n");
-        while (1);                              // init fail, die here
+if (!sd.begin(SD_CONFIG)) {
+    sd.initErrorHalt(&Serial);
     }
-    DEBUG("SD init OK!\n");
+
+    //Sd2Card card;
+   // card.init(SPI_FULL_SPEED, SD_CS);
+   // if (!SD.begin(SD_CS))  {
+    //    DEBUG("SD init failed!\n");
+    //    while (1);                              // init fail, die here
+   // }
+   // DEBUG("SD init OK!\n");
 }
 
 /******************************************************************************
@@ -136,8 +140,9 @@ Info:
 void SDCard_ReadBMP(const char *BmpName, UWORD Xstart, UWORD Ystart)
 {
     File bmpFile;
-    bmpFile = SD.open(BmpName);
-    if (!bmpFile) {
+    //bmpFile = sd.open(BmpName,FILE_READ);
+
+    if (!bmpFile.open(BmpName,O_RDONLY)) {
         DEBUG("not find : ");
         DEBUG(BmpName);
         DEBUG("\n");
@@ -179,7 +184,7 @@ void SDCard_ReadBMP(const char *BmpName, UWORD Xstart, UWORD Ystart)
 void SDCard_Read_4GrayBMP(const char *BmpName, UWORD Xstart, UWORD Ystart)
 {
     File bmpFile;
-    bmpFile = SD.open(BmpName);
+    bmpFile = sd.open(BmpName);
     if (!bmpFile) {
         DEBUG("not find : ");
         DEBUG(BmpName);
@@ -244,7 +249,7 @@ void SDCard_Read_RGB_7Color(const char *path, UWORD Xstart, UWORD Ystart)
 {
     File bmpFile;
     /* 1.Open file read file header */
-    bmpFile = SD.open(path);
+    bmpFile = sd.open(path);
     if (!bmpFile) {
         DEBUG("not find : ");
         DEBUG(path);
